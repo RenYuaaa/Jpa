@@ -4,10 +4,8 @@ import com.ren.domain.Customer;
 import com.ren.utils.JpaUtils;
 import org.junit.Test;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author : renjiahui
@@ -216,14 +214,149 @@ public class JpaTest {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
 
-        //3、增删改查--更新操作
+        //3、增删改查--查询全部
+        String sql = "from com.ren.domain.Customer";
+        Query query = entityManager.createQuery(sql);
+
+        //发送查询，并封装结果集
+        List list = query.getResultList();
+        list.forEach(System.out::println);
+
+        //4、提交事务
+        transaction.commit();
+
+        //5、释放资源
+        entityManager.close();
+    }
+
+    /**
+     * 排序查询
+     *
+     * 进行jpql查询
+     *  1、创建query查询对象
+     *  2、对参数进行赋值
+     *  3、查询、并得到返回结果
+     */
+    @Test
+    public void testOrders() {
+        //1、通过工具类获取entityManager
+        EntityManager entityManager = JpaUtils.getEntityManager();
+
+        //2、开启事务
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        //3、增删改查--排序查询
+        String sql = "from Customer order by id desc";
+
+        //创建Query查询对象，query对象才是执行sql的对象
+        Query query = entityManager.createQuery(sql);
+
+        //发送查询，并封装结果集
+        List list = query.getResultList();
+        list.forEach(System.out::println);
+
+        //4、提交事务
+        transaction.commit();
+
+        //5、释放资源
+        entityManager.close();
+    }
+
+    /**
+     * 查询客户总人数
+     */
+    @Test
+    public void testCount() {
+        //1、通过工具类获取entityManager
+        EntityManager entityManager = JpaUtils.getEntityManager();
+
+        //2、开启事务
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        //3、增删改查--排序查询
+        String sql = "select count(id) from Customer";
+
+        //创建Query查询对象，query对象才是执行sql的对象
+        Query query = entityManager.createQuery(sql);
+
         /**
-         * 1、根据id查询客户
-         * 2、调用merge方法完成更新操作
+         * getResultLis：直接将查询结果封装为List集合
+         * getSingleResult：得到唯一的结果集
          */
-        Customer customer = entityManager.(Customer.class, 1);
-        customer.setCustAddress("00000000");
-        entityManager.merge(customer);
+        Object singleResult = query.getSingleResult();
+        System.out.println(singleResult);
+
+        //4、提交事务
+        transaction.commit();
+
+        //5、释放资源
+        entityManager.close();
+    }
+
+    /**
+     * 分页查询
+     */
+    @Test
+    public void testPaged() {
+        //1、通过工具类获取entityManager
+        EntityManager entityManager = JpaUtils.getEntityManager();
+
+        //2、开启事务
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        //3、增删改查--分页查询
+        String sql = "from Customer";
+
+        //创建Query查询对象，query对象才是执行sql的对象
+        Query query = entityManager.createQuery(sql);
+
+        //起始索引
+        query.setFirstResult(1);
+
+        //每页查询条数
+        query.setMaxResults(1);
+
+        //发送查询，并封装结果集
+        List list = query.getResultList();
+        list.forEach(System.out::println);
+
+        //4、提交事务
+        transaction.commit();
+
+        //5、释放资源
+        entityManager.close();
+    }
+
+    /**
+     * 条件查询
+     */
+    @Test
+    public void testCondition() {
+        //1、通过工具类获取entityManager
+        EntityManager entityManager = JpaUtils.getEntityManager();
+
+        //2、开启事务
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        //3、增删改查--条件查询
+        //占位符要标记为：?1、?2这种形式
+        String sql = "from Customer where custName like ?1";
+
+        //创建Query查询对象，query对象才是执行sql的对象
+        Query query = entityManager.createQuery(sql);
+
+        //对参数赋值--占位符参数
+        //第一个参数，占位符对索引位置（从1开始），第二个参数，取值
+        query.setParameter(1, "renjiahui%");
+
+
+        //发送查询，并封装结果集
+        List list = query.getResultList();
+        list.forEach(System.out::println);
 
         //4、提交事务
         transaction.commit();

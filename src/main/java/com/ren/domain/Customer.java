@@ -133,4 +133,17 @@ public class Customer {
     public void setCustAddress(String custAddress) {
         this.custAddress = custAddress;
     }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "id=" + id +
+                ", custName='" + custName + '\'' +
+                ", custSource='" + custSource + '\'' +
+                ", custLevel='" + custLevel + '\'' +
+                ", custInsdustry='" + custInsdustry + '\'' +
+                ", custPhone='" + custPhone + '\'' +
+                ", custAddress='" + custAddress + '\'' +
+                '}';
+    }
 }
